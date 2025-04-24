@@ -12,7 +12,7 @@ def optimizer(model):
         optimizer = optim.Adam(
             model.parameters(),
             lr=1e-5,
-            betas=(0.99, 0.999),
+            betas = BETA,
             weight_decay=1e-6,
             amsgrad=True  # nếu bạn muốn bật AMSGrad giống như bài báo có đề cập
         )
