@@ -9,7 +9,7 @@ def optimizer(model):
     args = get_args()
     if args.optimizer == "Adam":
         # optimizer = Adam(model.parameters(), lr=lr0, weight_decay=weight_decay)
-        optimizer = optim.Adam(
+        optimizer = Adam(
             model.parameters(),
             lr = INIT_LR,
             betas = BETA,
