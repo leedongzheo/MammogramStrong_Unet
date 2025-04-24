@@ -13,7 +13,7 @@ def optimizer(model):
             model.parameters(),
             lr=1e-5,
             betas = BETA,
-            weight_decay=1e-6,
+            weight_decay = WEIGHT_DECAY,
             amsgrad=True  # nếu bạn muốn bật AMSGrad giống như bài báo có đề cập
         )
         return optimizer
