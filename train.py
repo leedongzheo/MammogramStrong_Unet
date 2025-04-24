@@ -40,7 +40,7 @@ def main():
     global trainer
     SEED=42
     torch.manual_seed(SEED)
-    model1 = Unet.UNet()
+    model1 = Unet.Unet()
     optimizer1 = optimizer.optimizer(model = model1)
     trainer = Trainer(model = model1, optimizer = optimizer1)
     if args.mode == "train":
