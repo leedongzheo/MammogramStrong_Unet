@@ -8,7 +8,14 @@ from train import get_args
 def optimizer(model):
     args = get_args()
     if args.optimizer == "Adam":
-        optimizer = Adam(model.parameters(), lr=lr0, weight_decay=weight_decay)
+        # optimizer = Adam(model.parameters(), lr=lr0, weight_decay=weight_decay)
+        optimizer = optim.Adam(
+            model.parameters(),
+            lr=1e-5,
+            betas=(0.99, 0.999),
+            weight_decay=1e-6,
+            amsgrad=True  # nếu bạn muốn bật AMSGrad giống như bài báo có đề cập
+        )
         return optimizer
     elif args.optimizer == "SGD":
         optimizer = SGD(model.parameters(), lr=lr0, weight_decay=weight_decay) 
