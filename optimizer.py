@@ -14,7 +14,7 @@ def optimizer(model):
             lr = INIT_LR,
             betas = BETA,
             weight_decay = WEIGHT_DECAY,
-            amsgrad=True  # nếu bạn muốn bật AMSGrad giống như bài báo có đề cập
+            amsgrad = AMSGRAD  # nếu bạn muốn bật AMSGrad giống như bài báo có đề cập
         )
         return optimizer
     elif args.optimizer == "SGD":
