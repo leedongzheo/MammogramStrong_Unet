@@ -39,6 +39,7 @@ INPUT_IMAGE_WIDTH = 256
 INPUT_IMAGE_HEIGHT = 256
 NUM_CLASSES = 1
 BETA = (0.99, 0.999)
+AMSGRAD=True
 
 """Phần II: Xử lý logic"""
 args = get_args()
