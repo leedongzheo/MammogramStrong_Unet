@@ -74,7 +74,11 @@ def export(trainer):
     # df.info()
 
     # Plot Losses
-    plt.figure(figsize=(18, 5))
+    plt.figure(figsize=(15, 5))
+    # Tick spacing
+    max_epoch = df['epoch'].max()
+    xticks_range = range(0, max_epoch + 1, 50)
+    
     plt.subplot(1, 3, 1)
     plt.plot(df['epoch'], df['train_losses'], label='Train Loss')
     plt.plot(df['epoch'], df['val_losses'], label='Valid Loss')
@@ -82,6 +86,13 @@ def export(trainer):
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
+    plt.xticks(xticks_range)
+    # Trục x đến max_epoch, trục y đến max loss thật
+    plt.xlim(0, df['epoch'].max())
+    plt.ylim(0, max(df['train_losses'].max(), df['val_losses'].max()))
+
+    # Tỷ lệ 1:1 nhưng giữ nguyên scale gốc
+    plt.gca().set_aspect('auto', adjustable='box')
 
     # Plot Dice Coefficients
     plt.subplot(1, 3, 2)
@@ -91,6 +102,11 @@ def export(trainer):
     plt.xlabel('Epoch')
     plt.ylabel('Dice Coefficient')
     plt.legend()
+    plt.xticks(xticks_range)
+    # plt.gca().set_aspect('equal', adjustable='box')
+    plt.xlim(0, max_epoch)
+    plt.ylim(0, max(df['train_dices'].max(), df['val_dices'].max()))
+    plt.gca().set_aspect('auto', adjustable='box')
     
     # Plot IOU
     plt.subplot(1, 3, 3)
@@ -100,6 +116,12 @@ def export(trainer):
     plt.xlabel('Epoch')
     plt.ylabel('IOU')
     plt.legend()
+    plt.xticks(xticks_range)
+    # plt.gca().set_aspect('equal', adjustable='box')
+    # Cân bằng trục x/y
+    plt.xlim(0, max_epoch)
+    plt.ylim(0, max(df['train_ious'].max(), df['val_ious'].max()))
+    plt.gca().set_aspect('auto', adjustable='box')
     
     # Vẽ đồ thị
     plt.tight_layout()
