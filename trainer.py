@@ -106,8 +106,9 @@ class Trainer:
                 for i, (images, masks) in val_loader_progress:
                     images, masks = images.to(self.device), masks.to(self.device)
                     outputs = self.model(images)
-                    loss = self.criterion(outputs, masks)
                     dice = dice_coeff(outputs, masks)
+                    loss = self.criterion(dice)
+                    dice = torch.mean(dice)
                     iou = iou_core(outputs, masks)
                     
                     val_loss += loss.item()
@@ -207,8 +208,9 @@ class Trainer:
                 for i, (images, masks) in val_loader_progress:
                     images, masks = images.to(self.device), masks.to(self.device)
                     outputs = self.model(images)
-                    loss = self.criterion(outputs, masks)
                     dice = dice_coeff(outputs, masks)
+                    loss = self.criterion(dice)
+                    dice = torch.mean(dice)
                     iou = iou_core(outputs, masks)
                     val_loss += loss.item()
                     val_dice += dice.item()
