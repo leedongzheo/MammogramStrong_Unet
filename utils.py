@@ -32,10 +32,18 @@ def tensor_to_float(value):
 def to_numpy(tensor):
     # Move tensor to CPU and convert to NumPy array
     return tensor.cpu().detach().item()
-def dice_coeff(pred, target, smooth=1e-5):
-    pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
-    intersection = torch.sum(pred * target)
-    return (2. * intersection + smooth) / (torch.sum(pred) + torch.sum(target) + smooth)
+# def dice_coeff(pred, target, smooth=1e-5):
+#     pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
+#     intersection = torch.sum(pred * target)
+#     return (2. * intersection + smooth) / (torch.sum(pred) + torch.sum(target) + smooth)
+def dice_coeff(pred, target, epsilon=1e-5):
+    y_pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
+    numerator = 2 * torch.sum(target * y_pred, dim=(1, 2))
+    denominator = torch.sum(target + y_pred, dim=(1, 2))
+    dice = (numerator + epsilon) / (denominator + epsilon)
+    # return torch.mean(dice)
+    return dice
+
 def iou_core(y_pred, y_true, eps=1e-7):
     y_pred = torch.sigmoid(y_pred) 
     y_true_f = y_true.view(-1)  # flatten
@@ -45,8 +53,8 @@ def iou_core(y_pred, y_true, eps=1e-7):
     union = torch.sum(y_true_f) + torch.sum(y_pred_f) - intersection
 
     return intersection / (union + eps)  # thêm eps để tránh chia 0
-import torch
-import torch.nn.functional as F
+# import torch
+# import torch.nn.functional as F
 
 def soft_dice_loss(y_pred, y_true, epsilon=1e-6, gamma=0.3):
     """
@@ -61,10 +69,11 @@ def soft_dice_loss(y_pred, y_true, epsilon=1e-6, gamma=0.3):
     Returns:
         loss: scalar loss value.
     """
-    y_pred = torch.sigmoid(y_pred) 
-    numerator = 2 * torch.sum(y_true * y_pred, dim=(1, 2))
-    denominator = torch.sum(y_true + y_pred, dim=(1, 2))
-    dice = (numerator + epsilon) / (denominator + epsilon)
+    # y_pred = torch.sigmoid(y_pred) 
+    # numerator = 2 * torch.sum(y_true * y_pred, dim=(1, 2))
+    # denominator = torch.sum(y_true + y_pred, dim=(1, 2))
+    # dice = (numerator + epsilon) / (denominator + epsilon)
+    dice = dice_coeff(y_pred, y_true)
     log_dice = -torch.log(dice)
     loss = torch.pow(log_dice, gamma)
     return torch.mean(loss)
