@@ -56,7 +56,7 @@ def iou_core(y_pred, y_true, eps=1e-7):
 # import torch
 # import torch.nn.functional as F
 
-def soft_dice_loss(y_pred, y_true, epsilon=1e-6, gamma=0.3):
+def soft_dice_loss(dice, epsilon=1e-6, gamma=0.3):
     """
     Soft Dice Loss dạng Log-Dice, dùng cho segmentation.
 
@@ -73,7 +73,7 @@ def soft_dice_loss(y_pred, y_true, epsilon=1e-6, gamma=0.3):
     # numerator = 2 * torch.sum(y_true * y_pred, dim=(1, 2))
     # denominator = torch.sum(y_true + y_pred, dim=(1, 2))
     # dice = (numerator + epsilon) / (denominator + epsilon)
-    dice = dice_coeff(y_pred, y_true)
+    # dice = dice_coeff(y_pred, y_true)
     log_dice = -torch.log(dice)
     loss = torch.pow(log_dice, gamma)
     return torch.mean(loss)
