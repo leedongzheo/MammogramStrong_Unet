@@ -94,7 +94,7 @@ def loss_func(inputs, target):
         x = bce_dice_weight_loss(inputs,target)
         return x
     elif args.loss == "SoftDice_loss":
-        x = soft_dice_loss(inputs,target)
+        x = soft_dice_loss(dice)
         return x
 
 
