@@ -45,6 +45,30 @@ def iou_core(y_pred, y_true, eps=1e-7):
     union = torch.sum(y_true_f) + torch.sum(y_pred_f) - intersection
 
     return intersection / (union + eps)  # thêm eps để tránh chia 0
+import torch
+import torch.nn.functional as F
+
+def soft_dice_loss(y_true, y_pred, epsilon=1e-6, gamma=0.3):
+    """
+    Soft Dice Loss dạng Log-Dice, dùng cho segmentation.
+
+    Args:
+        y_true: Tensor ground truth, shape (batch_size, H, W)
+        y_pred: Tensor prediction, shape (batch_size, H, W)
+        epsilon: Giá trị nhỏ để tránh chia cho 0.
+        gamma: Hệ số mũ cho log-dice.
+
+    Returns:
+        loss: scalar loss value.
+    """
+
+    numerator = 2 * torch.sum(y_true * y_pred, dim=(1, 2))
+    denominator = torch.sum(y_true + y_pred, dim=(1, 2))
+    dice = (numerator + epsilon) / (denominator + epsilon)
+    log_dice = -torch.log(dice)
+    loss = torch.pow(log_dice, gamma)
+    return torch.mean(loss)
+
 # def inan():
 def loss_func(inputs, target):
     args = get_args()
@@ -59,6 +83,9 @@ def loss_func(inputs, target):
         return x
     elif args.loss == "BCEwDice_loss":
         x = bce_dice_weight_loss(inputs,target)
+        return x
+    elif args.loss == "SoftDice_loss":
+        x = soft_dice_loss(inputs,target)
         return x
 
 
