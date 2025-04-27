@@ -79,22 +79,22 @@ def soft_dice_loss(dice, gamma=0.3):
     return torch.mean(loss)
 
 # def inan():
-def loss_func(inputs, target):
+def loss_func(*kwargs):
     args = get_args()
     if args.loss == "Dice_loss":
-        x = dice_coef_loss(inputs,target)
+        x = dice_coef_loss(*kwargs)
         return x
     elif args.loss == "BCEDice_loss":
-        x = bce_dice_loss(inputs,target)
+        x = bce_dice_loss(*kwargs)
         return x
     elif args.loss == "BCEw_loss":
-        x = bce_weight_loss(inputs,target)
+        x = bce_weight_loss(*kwargs)
         return x
     elif args.loss == "BCEwDice_loss":
-        x = bce_dice_weight_loss(inputs,target)
+        x = bce_dice_weight_loss(*kwargs)
         return x
     elif args.loss == "SoftDice_loss":
-        x = soft_dice_loss(dice)
+        x = soft_dice_loss(*kwargs)
         return x
 
 
