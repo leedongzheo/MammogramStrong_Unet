@@ -124,7 +124,7 @@ class Trainer:
             avg_train_iou = train_iou / len(train_loader)
             avg_val_iou = val_iou / len(val_loader)
 
-            self.scheduler.step(epoch) #=> CosineAnnealingLR(self.optimizer, T_max=T_max, eta_min=lr_min)
+            self.scheduler.step() #=> CosineAnnealingLR(self.optimizer, T_max=T_max, eta_min=lr_min)
             # self.scheduler.step(avg_val_loss) #=> scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
             
             print(f"Epoch {epoch+1}: LR {self.scheduler.get_last_lr()[0]}, Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
@@ -227,7 +227,7 @@ class Trainer:
             avg_train_iou = train_iou / len(train_loader)
             avg_val_iou = val_iou / len(val_loader)
             
-            self.scheduler.step(epoch)  #=> CosineAnnealingLR(self.optimizer, T_max=T_max, eta_min=lr_min)
+            self.scheduler.step()  #=> CosineAnnealingLR(self.optimizer, T_max=T_max, eta_min=lr_min)
             # self.scheduler.step(avg_val_loss) # => scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
             
             print(f"Epoch {epoch+1}: LR {self.scheduler.get_last_lr()[0]}, Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
