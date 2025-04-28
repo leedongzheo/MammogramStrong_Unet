@@ -11,7 +11,7 @@ def optimizer(model):
         # optimizer = Adam(model.parameters(), lr=lr0, weight_decay=weight_decay)
         optimizer = Adam(
             model.parameters(),
-            lr = INIT_LR,
+            lr = lr0,
             betas = BETA,
             weight_decay = WEIGHT_DECAY,
             amsgrad = AMSGRAD  # nếu bạn muốn bật AMSGrad giống như bài báo có đề cập
