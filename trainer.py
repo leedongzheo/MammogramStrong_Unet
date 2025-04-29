@@ -81,7 +81,7 @@ class Trainer:
                 self.optimizer.zero_grad()
 
                 outputs = self.model(images)
-                loss = self.criterion(outputs, masks)
+                # loss = self.criterion(outputs, masks)
                 dice = dice_coeff(outputs, masks)
                 loss = self.criterion(dice)
                 dice = torch.mean(dice)
