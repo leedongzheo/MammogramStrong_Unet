@@ -44,17 +44,24 @@ def dice_coeff(pred, target, epsilon=1e-6):
     # return torch.mean(dice)
     return dice
 
-def iou_core(y_pred, y_true, eps=1e-7):
-    y_pred = torch.sigmoid(y_pred) 
-    y_true_f = y_true.view(-1)  # flatten
-    y_pred_f = y_pred.view(-1)  # flatten
+# def iou_core(y_pred, y_true, eps=1e-7):
+#     y_pred = torch.sigmoid(y_pred) 
+#     y_true_f = y_true.view(-1)  # flatten
+#     y_pred_f = y_pred.view(-1)  # flatten
 
-    intersection = torch.sum(y_true_f * y_pred_f)
-    union = torch.sum(y_true_f) + torch.sum(y_pred_f) - intersection
+#     intersection = torch.sum(y_true_f * y_pred_f)
+#     union = torch.sum(y_true_f) + torch.sum(y_pred_f) - intersection
 
-    return intersection / (union + eps)  # thêm eps để tránh chia 0
+#     return intersection / (union + eps)  # thêm eps để tránh chia 0
 # import torch
 # import torch.nn.functional as F
+def iou_core(pred, target, epsilon=1e-6):
+    pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
+    # Tính intersection và union theo từng ảnh
+    intersection = torch.sum(pred * target, dim=(1, 2))  # Batch_size x 1
+    union = torch.sum(pred, dim=(1, 2)) + torch.sum(target, dim=(1, 2)) - intersection
+    iou = (intersection + epsilon) / (union + epsilon)
+    return iou  # Giữ nguyên theo batch, mỗi ảnh 1 giá trị
 
 def soft_dice_loss(dice, gamma=0.3):
     """
