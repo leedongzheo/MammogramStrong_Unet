@@ -39,8 +39,8 @@ def to_numpy(tensor):
 def dice_coeff(pred, target, epsilon=1e-6):
     y_pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
     print("y_pred_shape: ", y_pred.shape)
-    numerator = 2 * torch.sum(target * y_pred, dim=(1, 2))
-    denominator = torch.sum(target + y_pred, dim=(1, 2))
+    numerator = 2 * torch.sum(target * y_pred, dim=(1, 2, 3))
+    denominator = torch.sum(target + y_pred, dim=(1, 2, 3))
     dice = (numerator + epsilon) / (denominator + epsilon)
     # return torch.mean(dice)
     return dice
@@ -59,8 +59,8 @@ def dice_coeff(pred, target, epsilon=1e-6):
 def iou_core(pred, target, epsilon=1e-6):
     pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
     # Tính intersection và union theo từng ảnh
-    intersection = torch.sum(pred * target, dim=(1, 2))  # Batch_size x 1
-    union = torch.sum(pred, dim=(1, 2)) + torch.sum(target, dim=(1, 2)) - intersection
+    intersection = torch.sum(pred * target, dim=(1, 2, 3))  # Batch_size x 1
+    union = torch.sum(pred, dim=(1, 2)) + torch.sum(target, dim=(1, 2, 3)) - intersection
     iou = (intersection + epsilon) / (union + epsilon)
     return iou  # Giữ nguyên theo batch, mỗi ảnh 1 giá trị
 
