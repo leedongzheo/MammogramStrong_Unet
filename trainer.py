@@ -86,6 +86,7 @@ class Trainer:
                 loss = self.criterion(dice)
                 dice = torch.mean(dice)
                 iou = iou_core(outputs, masks)
+                iou = torch.mean(iou)
                 
                 loss.backward()
                 self.optimizer.step()
@@ -110,6 +111,7 @@ class Trainer:
                     loss = self.criterion(dice)
                     dice = torch.mean(dice)
                     iou = iou_core(outputs, masks)
+                    iou = torch.mean(iou)
                     
                     val_loss += loss.item()
                     val_dice += dice.item()
@@ -191,6 +193,7 @@ class Trainer:
                 loss = self.criterion(dice)
                 dice = torch.mean(dice)
                 iou = iou_core(outputs, masks)
+                iou = torch.mean(iou)
                 
                 loss.backward()
                 self.optimizer.step()
@@ -215,6 +218,8 @@ class Trainer:
                     loss = self.criterion(dice)
                     dice = torch.mean(dice)
                     iou = iou_core(outputs, masks)
+                    iou = torch.mean(iou)
+                    
                     val_loss += loss.item()
                     val_dice += dice.item()
                     val_iou += iou.item()
