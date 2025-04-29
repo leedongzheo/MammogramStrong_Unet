@@ -81,9 +81,14 @@ def soft_dice_loss(dice, gamma=0.3):
     # denominator = torch.sum(y_true + y_pred, dim=(1, 2))
     # dice = (numerator + epsilon) / (denominator + epsilon)
     # dice = dice_coeff(y_pred, y_true)
+    print("dice_in_step:", dice)
     log_dice = -torch.log(dice)
+    print("log_dice_in_step", log_dice)
     loss = torch.pow(log_dice, gamma)
-    return torch.mean(loss)
+    print("loss_in_step", loss)
+    loss_mean = torch.mean(loss)
+    print("loss_mean_in_step", loss_mean)
+    return loss_mean
 
 # def inan():
 def loss_func(*kwargs):
