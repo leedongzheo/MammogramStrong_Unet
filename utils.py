@@ -38,7 +38,7 @@ def to_numpy(tensor):
 #     return (2. * intersection + smooth) / (torch.sum(pred) + torch.sum(target) + smooth)
 def dice_coeff(pred, target, epsilon=1e-6):
     y_pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
-    print("y_pred_shape: ", y_pred.shape)
+    # print("y_pred_shape: ", y_pred.shape)
     numerator = 2 * torch.sum(target * y_pred, dim=(1, 2, 3))
     denominator = torch.sum(target + y_pred, dim=(1, 2, 3))
     dice = (numerator + epsilon) / (denominator + epsilon)
@@ -82,16 +82,18 @@ def soft_dice_loss(dice, gamma=0.3):
     # denominator = torch.sum(y_true + y_pred, dim=(1, 2))
     # dice = (numerator + epsilon) / (denominator + epsilon)
     # dice = dice_coeff(y_pred, y_true)
-    print("dice_in_step:", dice)
-    print("dice_in_step_shape:", dice.shape)
+    # -------------------------------------------
+    # Debug
+    # print("dice_in_step:", dice)
+    # print("dice_in_step_shape:", dice.shape)
     log_dice = -torch.log(dice)
-    print("log_dice_in_step", log_dice)
+    # print("log_dice_in_step", log_dice)
     loss = torch.pow(log_dice, gamma)
-    print("loss_in_step", loss)
-    print("loss_in_step_shape:", loss.shape)
+    # print("loss_in_step", loss)
+    # print("loss_in_step_shape:", loss.shape)
     loss_mean = torch.mean(loss)
-    print("loss_mean_in_step", loss_mean)
-    print("loss_mean_in_step_shape:", loss_mean.shape)
+    # print("loss_mean_in_step", loss_mean)
+    # print("loss_mean_in_step_shape:", loss_mean.shape)
     return loss_mean
 
 # def inan():
