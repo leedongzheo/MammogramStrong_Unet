@@ -60,7 +60,7 @@ def iou_core(pred, target, epsilon=1e-6):
     pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
     # Tính intersection và union theo từng ảnh
     intersection = torch.sum(pred * target, dim=(1, 2, 3))  # Batch_size x 1
-    union = torch.sum(pred, dim=(1, 2)) + torch.sum(target, dim=(1, 2, 3)) - intersection
+    union = torch.sum(pred, dim=(1, 2, 3)) + torch.sum(target, dim=(1, 2, 3)) - intersection
     iou = (intersection + epsilon) / (union + epsilon)
     return iou  # Giữ nguyên theo batch, mỗi ảnh 1 giá trị
 
