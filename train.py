@@ -40,8 +40,8 @@ def main():
     global trainer
     SEED=42
     torch.manual_seed(SEED)
-    model1 = Unet.Unet(input_channel = 3)
-    # model1 = unet_pyramid_cbam_gate.PyramidCbamGateUNet(in_channels=3)
+    # model1 = Unet.Unet(input_channel = 3)
+    model1 = unet_pyramid_cbam_gate.PyramidCbamGateUNet(in_channels=3)
     optimizer1 = optimizer.optimizer(model = model1)
     trainer = Trainer(model = model1, optimizer = optimizer1)
     if args.mode == "train":
