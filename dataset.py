@@ -77,6 +77,7 @@ class SegmentationDataset(Dataset):
 			# mask = augmented["mask"]
 			# print("shape_mask1: ", mask.shape)
 	        	mask = augmented["mask"].unsqueeze(0)  # (1, H, W) để phù hợp với U-Net
+			mask = (mask > 127).astype("float32")
 			# print("shape_image: ", image.shape)
 			# print("shape_mask: ", mask.shape)
 		return (image, mask)
