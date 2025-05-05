@@ -76,7 +76,8 @@ class SegmentationDataset(Dataset):
 			image = augmented["image"]
 			# mask = augmented["mask"]
 			# print("shape_mask1: ", mask.shape)
-	        	mask = (mask > 127).float()                  # chuyển về float32: giá trị 0.0 hoặc 1.0
+	        	mask = (mask > 127).astype("float32")        # chuyển về float32: giá trị 0.0 hoặc 1.0
+			mask = torch.from_numpy(mask)  
 			mask = mask.unsqueeze(0)                     # shape (1, H, W)
 
 			# print("shape_image: ", image.shape)
