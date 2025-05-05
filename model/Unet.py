@@ -9,7 +9,7 @@ from config import*
 class ConvBlock(nn.Module):
     def __init__(self, input_channel, out_channel, dropout):
         super(ConvBlock, self).__init__()
-        self.conv2d_1 = nn.Conv2d(input_channel, out_channel, kernel_size=3, padding=1)
+        self.conv2d_1 = nn.Conv2d(input_channel = 3, out_channel, kernel_size=3, padding=1)
         self.batchnorm_1 = nn.BatchNorm2d(out_channel)
         self.relu_1 = nn.ReLU()
 
