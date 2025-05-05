@@ -58,19 +58,20 @@ class SegmentationDataset(Dataset):
 		image = cv2.imread(imagePath)
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 		mask = cv2.imread(self.maskPaths[idx], 0)
+		if self.transforms:
+	            augmented = self.transforms(image=image, mask=mask)
+	            image = augmented["image"]
+	            mask = augmented["mask"].unsqueeze(0)  # (1, H, W) để phù hợp với U-Net
+		return (image, mask)
 		# check to see if we are applying any transformations
 		# if self.transforms is not None:
 		# 	# apply the transformations to both image and its mask
 		# 	image = self.transforms(image)
 		# 	mask = self.transforms(mask)
-		# return a tuple of the image and its mask
+		## return a tuple of the image and its mask
+		# return (image, mask)
 		 # Nếu có transform thì apply cả ảnh + mask
-	        if self.transforms:
-	            augmented = self.transforms(image=image, mask=mask)
-	            image = augmented["image"]
-	            mask = augmented["mask"].unsqueeze(0)  # (1, H, W) để phù hợp với U-Net
-
-		return (image, mask)
+	        
 # load the image and mask filepaths in a sorted manner
 trainImagesPaths = sorted(list(paths.list_images(IMAGE_TRAIN_PATH)))
 trainMasksPaths = sorted(list(paths.list_images(MASK_TRAIN_PATH)))
