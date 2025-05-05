@@ -3,35 +3,35 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 train_transform = A.Compose([
-    A.Resize(height=256, width=256),
+	A.Resize(height=256, width=256),
 
     # 1. Horizontal Flip
-    A.HorizontalFlip(p=0.5),
+	A.HorizontalFlip(p=0.5),
 
     # 2. Rotation nhẹ
-    A.Rotate(limit=15, border_mode=0, p=0.3),
+	A.Rotate(limit=15, border_mode=0, p=0.3),
 
     # 3. Brightness / Contrast
-    A.RandomBrightnessContrast(brightness_limit=0.1,
+	A.RandomBrightnessContrast(brightness_limit=0.1,
                                contrast_limit=0.1, p=0.3),
 
     # 4. Gaussian noise
-    A.GaussNoise(var_limit=(10.0, 50.0), p=0.2),
+	A.GaussNoise(var_limit=(10.0, 50.0), p=0.2),
 
     # 5. Elastic deformation
-    A.ElasticTransform(alpha=1.0, sigma=50.0, alpha_affine=10.0, p=0.2),
+	A.ElasticTransform(alpha=1.0, sigma=50.0, alpha_affine=10.0, p=0.2),
 
     # 6. Grid distortion
-    A.GridDistortion(num_steps=5, distort_limit=0.03, p=0.2),
+	A.GridDistortion(num_steps=5, distort_limit=0.03, p=0.2),
 
     # Normalize ảnh RGB
-    A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
-    ToTensorV2()
+	A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
+	ToTensorV2()
 ])
 valid_transform = A.Compose([
-    A.Resize(height=256, width=256),
-    A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
-    ToTensorV2()
+	A.Resize(height=256, width=256),
+	A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
+	ToTensorV2()
 ])
 
 # transforms = transforms.Compose([transforms.ToPILImage(),
@@ -59,7 +59,7 @@ class SegmentationDataset(Dataset):
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 		mask = cv2.imread(self.maskPaths[idx], 0)
 		if self.transforms:
-	        	qaugmented = self.transforms(image=image, mask=mask)
+	        	augmented = self.transforms(image=image, mask=mask)
 	        	image = augmented["image"]
 	        	mask = augmented["mask"].unsqueeze(0)  # (1, H, W) để phù hợp với U-Net
 			print("shape_image: ", image.shape)
