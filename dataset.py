@@ -3,7 +3,7 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 train_transform = A.Compose([
-	A.Resize(height=256, width=256),
+	# A.Resize(height=256, width=256),
 
     # 1. Horizontal Flip
 	A.HorizontalFlip(p=0.5),
@@ -59,6 +59,8 @@ class SegmentationDataset(Dataset):
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 		mask = cv2.imread(self.maskPaths[idx], 0)
 		if self.transforms:
+			image = cv2.resize(image, (256, 256))
+			mask = cv2.resize(mask, (256, 256), interpolation=cv2.INTER_NEAREST)
 		    	augmented = self.transforms(image=image, mask=mask)
 			image = augmented["image"]
 			mask = augmented["mask"]
