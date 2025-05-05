@@ -42,6 +42,7 @@ def dice_coeff(pred, target, epsilon=1e-6):
     numerator = 2 * torch.sum(target * y_pred, dim=(1, 2, 3))
     denominator = torch.sum(target + y_pred, dim=(1, 2, 3))
     dice = (numerator + epsilon) / (denominator + epsilon)
+    print("shape_dice: ", dice.shape)
     # return torch.mean(dice)
     return dice
 
