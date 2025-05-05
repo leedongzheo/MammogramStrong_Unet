@@ -63,9 +63,9 @@ class SegmentationDataset(Dataset):
 			mask = cv2.resize(mask, (256, 256), interpolation=cv2.INTER_NEAREST)
 		    	augmented = self.transforms(image=image, mask=mask)
 			image = augmented["image"]
-			mask = augmented["mask"]
+			# mask = augmented["mask"]
 			# print("shape_mask1: ", mask.shape)
-	        	# mask = augmented["mask"].unsqueeze(0)  # (1, H, W) để phù hợp với U-Net
+	        	mask = augmented["mask"].unsqueeze(0)  # (1, H, W) để phù hợp với U-Net
 			# print("shape_image: ", image.shape)
 			# print("shape_mask2: ", mask.shape)
 		return (image, mask)
