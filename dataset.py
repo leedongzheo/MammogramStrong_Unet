@@ -2,32 +2,43 @@ from config import*
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
+# train_transform = A.Compose([
+# 	# A.Resize(height=256, width=256),
+
+#     # 1. Horizontal Flip
+# 	A.HorizontalFlip(p=0.5),
+
+#     # 2. Rotation nhẹ
+# 	A.Rotate(limit=15, border_mode=0, p=0.3),
+
+#     # 3. Brightness / Contrast
+# 	A.RandomBrightnessContrast(brightness_limit=0.1,
+#                                contrast_limit=0.1, p=0.3),
+
+#     # 4. Gaussian noise
+# 	A.GaussNoise(var_limit=(10.0, 50.0), p=0.2),
+
+#     # 5. Elastic deformation
+# 	A.ElasticTransform(alpha=1.0, sigma=50.0, alpha_affine=10.0, p=0.2),
+
+#     # 6. Grid distortion
+# 	A.GridDistortion(num_steps=5, distort_limit=0.03, p=0.2),
+
+#     # Normalize ảnh RGB
+# 	A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
+# 	ToTensorV2()
+# 
 train_transform = A.Compose([
-	# A.Resize(height=256, width=256),
-
-    # 1. Horizontal Flip
-	A.HorizontalFlip(p=0.5),
-
-    # 2. Rotation nhẹ
-	A.Rotate(limit=15, border_mode=0, p=0.3),
-
-    # 3. Brightness / Contrast
-	A.RandomBrightnessContrast(brightness_limit=0.1,
-                               contrast_limit=0.1, p=0.3),
-
-    # 4. Gaussian noise
-	A.GaussNoise(var_limit=(10.0, 50.0), p=0.2),
-
-    # 5. Elastic deformation
-	A.ElasticTransform(alpha=1.0, sigma=50.0, alpha_affine=10.0, p=0.2),
-
-    # 6. Grid distortion
-	A.GridDistortion(num_steps=5, distort_limit=0.03, p=0.2),
-
-    # Normalize ảnh RGB
-	A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
-	ToTensorV2()
+    A.HorizontalFlip(p=0.5),
+    A.Rotate(limit=15, border_mode=0, p=0.3),
+    A.RandomBrightnessContrast(brightness_limit=0.1, contrast_limit=0.1, p=0.3),
+    A.GaussNoise(var_limit=(10, 50), p=0.2),
+    A.ElasticTransform(alpha=1.0, sigma=50.0, p=0.2),
+    A.GridDistortion(num_steps=5, distort_limit=0.03, p=0.2),
+    A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
+    ToTensorV2()
 ])
+
 valid_transform = A.Compose([
 	A.Resize(height=256, width=256),
 	A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
