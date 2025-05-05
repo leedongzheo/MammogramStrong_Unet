@@ -38,11 +38,12 @@ def to_numpy(tensor):
 #     return (2. * intersection + smooth) / (torch.sum(pred) + torch.sum(target) + smooth)
 def dice_coeff(pred, target, epsilon=1e-6):
     y_pred = torch.sigmoid(pred)  # Chuyển logits về xác suất
-    # print("y_pred_shape: ", y_pred.shape)
+    print("y_pred_shape: ", y_pred.shape)
+    print("y_target_shape: ", target.shape)
     numerator = 2 * torch.sum(target * y_pred, dim=(1, 2, 3))
     denominator = torch.sum(target + y_pred, dim=(1, 2, 3))
     dice = (numerator + epsilon) / (denominator + epsilon)
-    print("shape_dice: ", dice.shape)
+    # print("shape_dice: ", dice.shape)
     # return torch.mean(dice)
     return dice
 
