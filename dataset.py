@@ -61,9 +61,10 @@ class SegmentationDataset(Dataset):
 		if self.transforms:
 	        	augmented = self.transforms(image=image, mask=mask)
 	        	image = augmented["image"]
-	        	mask = augmented["mask"].unsqueeze(0)  # (1, H, W) để phù hợp với U-Net
-			print("shape_image: ", image.shape)
-			print("shape_mask: ", mask.shape)
+			mask = augmented["mask"]
+	        	# mask = augmented["mask"].unsqueeze(0)  # (1, H, W) để phù hợp với U-Net
+			# print("shape_image: ", image.shape)
+			# print("shape_mask: ", mask.shape)
 		return (image, mask)
 		# check to see if we are applying any transformations
 		# if self.transforms is not None:
