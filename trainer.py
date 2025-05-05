@@ -76,7 +76,7 @@ class Trainer:
             train_loader_progress = tqdm(enumerate(train_loader), total=len(train_loader), desc="Training")
             for i, (images, masks) in train_loader_progress:
                 images, masks = images.to(self.device), masks.to(self.device)
-
+                print(masks.max())
                 self.model.train()
                 self.optimizer.zero_grad()
 
