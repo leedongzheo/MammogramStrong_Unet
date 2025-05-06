@@ -1,7 +1,7 @@
 from config import*
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-
+# ------------------Augment 1---------------------------
 # train_transform = A.Compose([
 # 	# A.Resize(height=256, width=256),
 
@@ -44,13 +44,27 @@ from albumentations.pytorch import ToTensorV2
 # 	A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
 # 	ToTensorV2()
 # ])
-
-transforms = transforms.Compose([transforms.ToPILImage(),
- 	transforms.Resize((INPUT_IMAGE_HEIGHT,
-		INPUT_IMAGE_WIDTH)),
-	transforms.ToTensor()])
-
+# ------------------Augment 2---------------------------
+# transforms = transforms.Compose([transforms.ToPILImage(),
+#  	transforms.Resize((INPUT_IMAGE_HEIGHT,
+# 		INPUT_IMAGE_WIDTH)),
+# 	transforms.ToTensor()])
 # from torch.utils.data import Dataset  # Thêm dòng này
+# ------------------Augment 3---------------------------
+train_transform = A.Compose([
+    A.HorizontalFlip(p=0.5),  # lật ngang là an toàn và thường dùng
+    A.Rotate(limit=10, border_mode=cv2.BORDER_REFLECT_101, p=0.2),  # xoay nhẹ
+    A.RandomBrightnessContrast(brightness_limit=0.05, contrast_limit=0.05, p=0.2),  # tăng độ sáng nhẹ
+    A.ShiftScaleRotate(shift_limit=0.02, scale_limit=0.05, rotate_limit=0, border_mode=cv2.BORDER_REFLECT_101, p=0.2),  # dịch và scale nhẹ
+    A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
+    ToTensorV2()
+])
+valid_transform = A.Compose([
+    A.Resize(height=256, width=256),
+    A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
+    ToTensorV2()
+])
+
 class SegmentationDataset(Dataset):
 	def __init__(self, imagePaths, maskPaths, transforms):
 		# store the image and mask filepaths, and augmentation
@@ -69,36 +83,32 @@ class SegmentationDataset(Dataset):
 		image = cv2.imread(imagePath)
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 		mask = cv2.imread(self.maskPaths[idx], 0)
-		if self.transforms is not None:
-			# apply the transformations to both image and its mask
-			image = self.transforms(image)
-			# mask = self.transforms(mask)
-			mask = cv2.resize(mask, (256, 256), interpolation=cv2.INTER_NEAREST)
-			mask = (mask > 127).astype("float32")
-			mask = torch.from_numpy(mask)
-			mask = mask.unsqueeze(0)
-		# return a tuple of the image and its mask
-		return (image, mask)
-		# if self.transforms:
-		# 	image = cv2.resize(image, (256, 256))
-		# 	mask = cv2.resize(mask, (256, 256), interpolation=cv2.INTER_NEAREST)
-		#     	augmented = self.transforms(image=image, mask=mask)
-		# 	image = augmented["image"]
-		# 	# mask = augmented["mask"]
-		# 	# print("shape_mask1: ", mask.shape)
-	 #        	mask = (mask > 127).astype("float32")        # chuyển về float32: giá trị 0.0 hoặc 1.0
-		# 	mask = torch.from_numpy(mask)  
-		# 	mask = mask.unsqueeze(0)                     # shape (1, H, W)
 
-		# 	# print("shape_image: ", image.shape)
-		# 	# print("shape_mask: ", mask.shape)
-		# return (image, mask)
+		if self.transforms:
+			image = cv2.resize(image, (256, 256))
+			mask = cv2.resize(mask, (256, 256), interpolation=cv2.INTER_NEAREST)
+		    	augmented = self.transforms(image=image, mask=mask)
+			image = augmented["image"]
+			# mask = augmented["mask"]
+			# print("shape_mask1: ", mask.shape)
+	        	mask = (mask > 127).astype("float32")        # chuyển về float32: giá trị 0.0 hoặc 1.0
+			mask = torch.from_numpy(mask)  
+			mask = mask.unsqueeze(0)                     # shape (1, H, W)
+
+			# print("shape_image: ", image.shape)
+			# print("shape_mask: ", mask.shape)
+		return (image, mask)
+		
 		# check to see if we are applying any transformations
 		# if self.transforms is not None:
 		# 	# apply the transformations to both image and its mask
 		# 	image = self.transforms(image)
-		# 	mask = self.transforms(mask)
-		## return a tuple of the image and its mask
+		# 	# mask = self.transforms(mask)
+		# 	mask = cv2.resize(mask, (256, 256), interpolation=cv2.INTER_NEAREST)
+		# 	mask = (mask > 127).astype("float32")
+		# 	mask = torch.from_numpy(mask)
+		# 	mask = mask.unsqueeze(0)
+		# # return a tuple of the image and its mask
 		# return (image, mask)
 		 
 	        
@@ -114,8 +124,8 @@ validMasksPaths = sorted(list(paths.list_images(MASK_VALID_PATH)))
 # 	transforms=transforms)
 # validDS = SegmentationDataset(imagePaths=validImagesPaths, maskPaths=validMasksPaths,
 #     transforms=transforms)
-trainDS = SegmentationDataset(trainImagesPaths, trainMasksPaths, transforms=transforms)
-validDS = SegmentationDataset(validImagesPaths, validMasksPaths, transforms=transforms)
+trainDS = SegmentationDataset(trainImagesPaths, trainMasksPaths, transforms = train_transform)
+validDS = SegmentationDataset(validImagesPaths, validMasksPaths, transforms = valid_transform)
 
 print(f"[INFO] found {len(trainDS)} examples in the training set...")
 print(f"[INFO] found {len(validDS)} examples in the valid set...")
