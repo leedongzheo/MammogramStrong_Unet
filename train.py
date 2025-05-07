@@ -36,7 +36,7 @@ def main():
     from model import Unet
     from model import unet_pyramid_cbam_gate
     import optimizer
-    from result import export
+    from result import export, export_evaluate
     global trainer
     SEED=42
     torch.manual_seed(SEED)
