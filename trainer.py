@@ -17,6 +17,9 @@ class Trainer:
         self.train_ious, self.val_ious = [], []
         self.best_model, self.best_dice, self.best_epoch = None, 0.0, 0
         self.log_interval = 1  # Số bước để log
+        self.dice_list = []
+        self.iou_list = []
+        self.path_list = []
          # Khởi tạo CosineAnnealingLR scheduler
         # self.scheduler = CosineAnnealingLR(self.optimizer, T_max=T_max, eta_min=lr_min)
         # self.scheduler = MultiStepLR(optimizer, milestones=[20, 40, 60], gamma=0.1)
