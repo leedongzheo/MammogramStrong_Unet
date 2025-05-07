@@ -97,6 +97,7 @@ class SegmentationDataset(Dataset):
 
 			# print("shape_image: ", image.shape)
 			# print("shape_mask: ", mask.shape)
+		# return (image, mask)
 		return image, mask, imagePath
 		
 		# check to see if we are applying any transformations
