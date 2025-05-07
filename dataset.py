@@ -119,6 +119,8 @@ trainMasksPaths = sorted(list(paths.list_images(MASK_TRAIN_PATH)))
 validImagesPaths = sorted(list(paths.list_images(IMAGE_VALID_PATH)))
 validMasksPaths = sorted(list(paths.list_images(MASK_VALID_PATH)))
 
+testImagesPaths = sorted(list(paths.list_images(IMAGE_TEST_PATH)))
+testMasksPaths = sorted(list(paths.list_images(MASK_TEST_PATH)))
 # create the train and test datasets
 # trainDS = SegmentationDataset(imagePaths=trainImagesPaths, maskPaths=trainMasksPaths,
 # 	transforms=transforms)
@@ -126,14 +128,20 @@ validMasksPaths = sorted(list(paths.list_images(MASK_VALID_PATH)))
 #     transforms=transforms)
 trainDS = SegmentationDataset(trainImagesPaths, trainMasksPaths, transforms = train_transform)
 validDS = SegmentationDataset(validImagesPaths, validMasksPaths, transforms = valid_transform)
+testDS = SegmentationDataset(imagePaths=testImagesPaths, maskPaths=testMasksPaths,
+    transforms=valid_transform)
 
-print(f"[INFO] found {len(trainDS)} examples in the training set...")
-print(f"[INFO] found {len(validDS)} examples in the valid set...")
+# print(f"[INFO] found {len(trainDS)} examples in the training set...")
+# print(f"[INFO] found {len(validDS)} examples in the valid set...")
+print(f"[INFO] found {len(testDS)} examples in the test set...")
 # create the training and test data loaders
 
-trainLoader = DataLoader(trainDS, shuffle=True,
-	batch_size=bach_size, pin_memory=PIN_MEMORY,
-	num_workers=4)
-validLoader = DataLoader(validDS, shuffle=False,
+# trainLoader = DataLoader(trainDS, shuffle=True,
+# 	batch_size=bach_size, pin_memory=PIN_MEMORY,
+# 	num_workers=4)
+# validLoader = DataLoader(validDS, shuffle=False,
+# 	batch_size=bach_size, pin_memory=PIN_MEMORY,
+# 	num_workers=4)
+testLoader = DataLoader(testDS, shuffle=False,
 	batch_size=bach_size, pin_memory=PIN_MEMORY,
 	num_workers=4)
