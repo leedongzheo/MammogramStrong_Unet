@@ -132,8 +132,8 @@ validDS = SegmentationDataset(validImagesPaths, validMasksPaths, transforms = va
 testDS = SegmentationDataset(imagePaths=testImagesPaths, maskPaths=testMasksPaths,
     transforms=valid_transform)
 
-# print(f"[INFO] found {len(trainDS)} examples in the training set...")
-# print(f"[INFO] found {len(validDS)} examples in the valid set...")
+print(f"[INFO] found {len(trainDS)} examples in the training set...")
+print(f"[INFO] found {len(validDS)} examples in the valid set...")
 print(f"[INFO] found {len(testDS)} examples in the test set...")
 # create the training and test data loaders
 
