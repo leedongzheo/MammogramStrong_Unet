@@ -83,34 +83,35 @@ class SegmentationDataset(Dataset):
 		image = cv2.imread(imagePath)
 		image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 		mask = cv2.imread(self.maskPaths[idx], 0)
-
-		if self.transforms:
-			image = cv2.resize(image, (256, 256))
+		# check to see if we are applying any transformations
+		if self.transforms is not None:
+			# apply the transformations to both image and its mask
+			image = self.transforms(image)
+			# mask = self.transforms(mask)
 			mask = cv2.resize(mask, (256, 256), interpolation=cv2.INTER_NEAREST)
-		    	augmented = self.transforms(image=image, mask=mask)
-			image = augmented["image"]
-			# mask = augmented["mask"]
-			# print("shape_mask1: ", mask.shape)
-	        	mask = (mask > 127).astype("float32")        # chuyển về float32: giá trị 0.0 hoặc 1.0
-			mask = torch.from_numpy(mask)  
-			mask = mask.unsqueeze(0)                     # shape (1, H, W)
-
-			# print("shape_image: ", image.shape)
-			# print("shape_mask: ", mask.shape)
-		# return (image, mask)
+			mask = (mask > 127).astype("float32")
+			mask = torch.from_numpy(mask)
+			mask = mask.unsqueeze(0)
+		# return a tuple of the image and its mask
 		return image, mask, imagePath
 		
-		# check to see if we are applying any transformations
-		# if self.transforms is not None:
-		# 	# apply the transformations to both image and its mask
-		# 	image = self.transforms(image)
-		# 	# mask = self.transforms(mask)
+		# if self.transforms:
+		# 	image = cv2.resize(image, (256, 256))
 		# 	mask = cv2.resize(mask, (256, 256), interpolation=cv2.INTER_NEAREST)
-		# 	mask = (mask > 127).astype("float32")
-		# 	mask = torch.from_numpy(mask)
-		# 	mask = mask.unsqueeze(0)
-		# # return a tuple of the image and its mask
-		# return (image, mask)
+		#     	augmented = self.transforms(image=image, mask=mask)
+		# 	image = augmented["image"]
+		# 	# mask = augmented["mask"]
+		# 	# print("shape_mask1: ", mask.shape)
+	 #        	mask = (mask > 127).astype("float32")        # chuyển về float32: giá trị 0.0 hoặc 1.0
+		# 	mask = torch.from_numpy(mask)  
+		# 	mask = mask.unsqueeze(0)                     # shape (1, H, W)
+
+		# 	# print("shape_image: ", image.shape)
+		# 	# print("shape_mask: ", mask.shape)
+		# # return (image, mask)
+		# return image, mask, imagePath
+		
+
 		 
 	        
 # load the image and mask filepaths in a sorted manner
