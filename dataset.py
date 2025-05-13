@@ -45,25 +45,25 @@ from albumentations.pytorch import ToTensorV2
 # 	ToTensorV2()
 # ])
 # ------------------Augment 2---------------------------
-# transforms = transforms.Compose([transforms.ToPILImage(),
-#  	transforms.Resize((INPUT_IMAGE_HEIGHT,
-# 		INPUT_IMAGE_WIDTH)),
-# 	transforms.ToTensor()])
-# from torch.utils.data import Dataset  # Thêm dòng này
+transforms = transforms.Compose([transforms.ToPILImage(),
+ 	transforms.Resize((INPUT_IMAGE_HEIGHT,
+		INPUT_IMAGE_WIDTH)),
+	transforms.ToTensor()])
+from torch.utils.data import Dataset  # Thêm dòng này
 # ------------------Augment 3---------------------------
-train_transform = A.Compose([
-    A.HorizontalFlip(p=0.5),  # lật ngang là an toàn và thường dùng
-    A.Rotate(limit=10, border_mode=cv2.BORDER_REFLECT_101, p=0.2),  # xoay nhẹ
-    A.RandomBrightnessContrast(brightness_limit=0.05, contrast_limit=0.05, p=0.2),  # tăng độ sáng nhẹ
-    A.ShiftScaleRotate(shift_limit=0.02, scale_limit=0.05, rotate_limit=0, border_mode=cv2.BORDER_REFLECT_101, p=0.2),  # dịch và scale nhẹ
-    A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
-    ToTensorV2()
-])
-valid_transform = A.Compose([
-    A.Resize(height=256, width=256),
-    A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
-    ToTensorV2()
-])
+# train_transform = A.Compose([
+#     A.HorizontalFlip(p=0.5),  # lật ngang là an toàn và thường dùng
+#     A.Rotate(limit=10, border_mode=cv2.BORDER_REFLECT_101, p=0.2),  # xoay nhẹ
+#     A.RandomBrightnessContrast(brightness_limit=0.05, contrast_limit=0.05, p=0.2),  # tăng độ sáng nhẹ
+#     A.ShiftScaleRotate(shift_limit=0.02, scale_limit=0.05, rotate_limit=0, border_mode=cv2.BORDER_REFLECT_101, p=0.2),  # dịch và scale nhẹ
+#     A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
+#     ToTensorV2()
+# ])
+# valid_transform = A.Compose([
+#     A.Resize(height=256, width=256),
+#     A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
+#     ToTensorV2()
+# ])
 
 class SegmentationDataset(Dataset):
 	def __init__(self, imagePaths, maskPaths, transforms):
@@ -123,14 +123,18 @@ validMasksPaths = sorted(list(paths.list_images(MASK_VALID_PATH)))
 testImagesPaths = sorted(list(paths.list_images(IMAGE_TEST_PATH)))
 testMasksPaths = sorted(list(paths.list_images(MASK_TEST_PATH)))
 # create the train and test datasets
-# trainDS = SegmentationDataset(imagePaths=trainImagesPaths, maskPaths=trainMasksPaths,
-# 	transforms=transforms)
-# validDS = SegmentationDataset(imagePaths=validImagesPaths, maskPaths=validMasksPaths,
-#     transforms=transforms)
-trainDS = SegmentationDataset(trainImagesPaths, trainMasksPaths, transforms = train_transform)
-validDS = SegmentationDataset(validImagesPaths, validMasksPaths, transforms = valid_transform)
+# -------------------Option 1: Not Augment---------------------------
+trainDS = SegmentationDataset(imagePaths=trainImagesPaths, maskPaths=trainMasksPaths,
+	transforms=transforms)
+validDS = SegmentationDataset(imagePaths=validImagesPaths, maskPaths=validMasksPaths,
+    transforms=transforms)
 testDS = SegmentationDataset(imagePaths=testImagesPaths, maskPaths=testMasksPaths,
-    transforms=valid_transform)
+    transforms=transforms)
+# -------------------Option 2: Augment---------------------------
+# trainDS = SegmentationDataset(trainImagesPaths, trainMasksPaths, transforms = train_transform)
+# validDS = SegmentationDataset(validImagesPaths, validMasksPaths, transforms = valid_transform)
+# testDS = SegmentationDataset(imagePaths=testImagesPaths, maskPaths=testMasksPaths,
+#     transforms=valid_transform)
 
 print(f"[INFO] found {len(trainDS)} examples in the training set...")
 print(f"[INFO] found {len(validDS)} examples in the valid set...")
