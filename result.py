@@ -45,12 +45,14 @@ def export(trainer):
     val_ious = tensor_to_float(checkpoint.get('val_ious', []))
     
     best_dice = tensor_to_float(checkpoint.get('best_dice', None))
-    best_epoch = tensor_to_float(checkpoint.get('best_epoch', None))
+    best_iou = tensor_to_float(checkpoint.get('best_iou', None))
+    best_epoch_dice = tensor_to_float(checkpoint.get('best_epoch_dice', None))
+    best_epoch_iou = tensor_to_float(checkpoint.get('best_epoch_iou', None))
     epoch = checkpoint.get('epoch', None)
     # start_epoch=checkpoint.get('start_epoch', None) + 1
     epochs = list(range(1, epoch + 1))
     # epochs = list(range(start_epoch, epoch + 1))
-
+    
     new_data = pd.DataFrame({
         'train_losses': train_losses,
         'val_losses': val_losses,
@@ -59,10 +61,11 @@ def export(trainer):
         'train_ious': train_ious,
         'val_ious': val_ious,
         'best_dice': [best_dice] * len(epochs),
-        'best_epoch': [best_epoch] * len(epochs),
+        'best_iou': [best_iou] * len(epochs),
+        'best_epoch_dice': [best_epoch_dice] * len(epochs),
+        'best_epoch_iou': [best_epoch_iou] * len(epochs),
         'epoch': epochs
     })
-
     # Lưu vào file Excel
     output_path = 'training_history_current_1.csv'
     csv_path_currrent = os.path.join(output_folder,output_path)
