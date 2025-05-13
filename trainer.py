@@ -15,7 +15,8 @@ class Trainer:
         self.train_losses, self.val_losses = [], []
         self.train_dices, self.val_dices = [], []
         self.train_ious, self.val_ious = [], []
-        self.best_model, self.best_dice, self.best_epoch = None, 0.0, 0
+        self.best_model, self.best_dice, self.best_epoch_dice = None, 0.0, 0
+        self.best_iou, self.best_epoch_iou = 0.0, 0
         self.log_interval = 1  # Số bước để log
         self.dice_list = []
         self.iou_list = []
@@ -23,10 +24,10 @@ class Trainer:
          # Khởi tạo CosineAnnealingLR scheduler
         # self.scheduler = CosineAnnealingLR(self.optimizer, T_max=T_max, eta_min=lr_min)
         # self.scheduler = MultiStepLR(optimizer, milestones=[20, 40, 60], gamma=0.1)
-        # self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=5)
+        self.scheduler = ReduceLROnPlateau(self.optimizer, mode='min', factor=0.5, patience=5)
 
 
-    def save_checkpoint(self, epoch, dice, filename, mode = "pretrained"):
+    def save_checkpoint(self, epoch, dice, iou, filename, mode = "pretrained"):
         if mode == "train":
             self.start_epoch = 0
         checkpoint = {
@@ -41,19 +42,22 @@ class Trainer:
             'train_ious': self.train_ious,
             'val_ious': self.val_ious,
             'best_dice': dice,
-            'best_epoch': self.best_epoch,
+            'best_iou': iou,
+            'best_epoch_dice':  self.best_epoch_dice,
+            'best_epoch_iou': self.best_epoch_iou,
         }
         torch.save(checkpoint, filename)
         print(f"[INFO] Checkpoint saved: {filename}")
     def load_checkpoint(self, path):
         self.checkpoint = torch.load(path, map_location=self.device)
         self.model.load_state_dict(self.checkpoint['model_state_dict'])
-        # self.optimizer.load_state_dict(self.checkpoint['optimizer_state_dict'])
+        self.optimizer.load_state_dict(self.checkpoint['optimizer_state_dict'])
         self.start_epoch=self.checkpoint['epoch']
         self.train_losses, self.val_losses = self.checkpoint['train_losses'], self.checkpoint['val_losses']
         self.train_dices, self.val_dices = self.checkpoint['train_dices'], self.checkpoint['val_dices']
         self.train_ious, self.val_ious = self.checkpoint['train_ious'], self.checkpoint['val_ious']
-        self.best_dice, self.best_epoch = self.checkpoint['best_dice'], self.checkpoint['best_epoch']
+        self.best_dice, self.best_epoch_dice = self.checkpoint['best_dice'], self.checkpoint['best_epoch_dice']
+        self.best_iou, self.best_epoch_iou = self.checkpoint['best_iou'], self.checkpoint['best_epoch_iou']
 
     def train(self, train_loader, val_loader, test_loader):
         print("lr0", lr0)
@@ -77,7 +81,7 @@ class Trainer:
             # Training loop with progress bar
             print(f'\nEpoch {epoch + 1}/{self.num_epochs}')
             train_loader_progress = tqdm(enumerate(train_loader), total=len(train_loader), desc="Training")
-            for i, (images, masks) in train_loader_progress:
+            for i, (images, masks, _) in train_loader_progress:
                 images, masks = images.to(self.device), masks.to(self.device)
                 # print("max_masks", masks.max(), type(masks))
                 self.model.train()
@@ -107,7 +111,7 @@ class Trainer:
             self.model.eval()
             with torch.no_grad():
                 val_loader_progress = tqdm(enumerate(val_loader), total=len(val_loader), desc="Validation")
-                for i, (images, masks) in val_loader_progress:
+                for i, (images, masks, _) in val_loader_progress:
                     images, masks = images.to(self.device), masks.to(self.device)
                     outputs = self.model(images)
                     dice = dice_coeff(outputs, masks)
@@ -130,10 +134,10 @@ class Trainer:
             avg_train_iou = train_iou / len(train_loader)
             avg_val_iou = val_iou / len(val_loader)
 
-            # self.scheduler.step(avg_val_loss) #=> scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
+            self.scheduler.step(avg_val_loss) #=> scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
             
-            # print(f"Epoch {epoch+1}: LR {self.scheduler.get_last_lr()[0]}, Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
-            print(f"Epoch {epoch+1}: Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
+            print(f"Epoch {epoch+1}: LR {self.scheduler.get_last_lr()[0]}, Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
+            # print(f"Epoch {epoch+1}: Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
             self.train_losses.append(avg_train_loss)
             self.val_losses.append(avg_val_loss)
             self.train_dices.append(avg_train_dice)
@@ -141,16 +145,18 @@ class Trainer:
             self.train_ious.append(avg_train_iou)
             self.val_ious.append(avg_val_iou)
             
-            self.save_checkpoint(epoch + 1, self.best_dice, f'last_model.pth', mode="train")
+            self.save_checkpoint(epoch + 1, self.best_dice, self.best_iou, f'last_model.pth', mode="train")
+            if avg_val_iou > self.best_iou:
+                self.best_iou, self.best_epoch_iou = avg_val_iou, epoch + 1
             if self.avg_val_dice > self.best_dice:
-                self.best_dice, self.best_epoch = self.avg_val_dice, epoch + 1
-                self.save_checkpoint(epoch +1, self.best_dice, f'best_model.pth', mode="train")
+                self.best_dice, self.best_epoch_dice = self.avg_val_dice, epoch + 1
+                self.save_checkpoint(epoch +1, self.best_dice, self.best_iou, f'best_model.pth', mode="train")
                 self.early_stop_counter = 0
             else:
                 self.early_stop_counter += 1
 
             if self.early_stop_counter >= self.patience:
-                self.save_checkpoint(epoch + 1, self.best_dice, f'last_model.pth', mode="train")
+                self.save_checkpoint(epoch + 1, self.best_dice, self.best_iou, f'last_model.pth', mode="train")
                 print(f"[INFO] Early stopping at epoch {epoch+1}")
                 break
             torch.cuda.empty_cache()
@@ -184,7 +190,7 @@ class Trainer:
             # Training loop with progress bar
             print(f'\nEpoch {epoch + 1}/{self.num_epochs}')
             train_loader_progress = tqdm(enumerate(train_loader), total=len(train_loader), desc="Training")
-            for i, (images, masks) in train_loader_progress:
+            for i, (images, masks, _) in train_loader_progress:
                 images, masks = images.to(self.device), masks.to(self.device)
 
                 self.model.train()
@@ -214,7 +220,7 @@ class Trainer:
             self.model.eval()
             with torch.no_grad():
                 val_loader_progress = tqdm(enumerate(val_loader), total=len(val_loader), desc="Validation")
-                for i, (images, masks) in val_loader_progress:
+                for i, (images, masks, _) in val_loader_progress:
                     images, masks = images.to(self.device), masks.to(self.device)
                     outputs = self.model(images)
                     dice = dice_coeff(outputs, masks)
@@ -238,10 +244,10 @@ class Trainer:
             avg_val_iou = val_iou / len(val_loader)
             
             
-            # self.scheduler.step(avg_val_loss) # => scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
+            self.scheduler.step(avg_val_loss) # => scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3)
             
-            # print(f"Epoch {epoch+1}: LR {self.scheduler.get_last_lr()[0]}, Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
-            print(f"Epoch {epoch+1}: Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
+            print(f"Epoch {epoch+1}: LR {self.scheduler.get_last_lr()[0]}, Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
+            # print(f"Epoch {epoch+1}: Train Loss {avg_train_loss:.4f}, Val Loss {avg_val_loss:.4f}, Train Dice {avg_train_dice:.4f}, Val Dice {self.avg_val_dice:.4f}, Train Iou {avg_train_iou:.4f}, Val Iou {avg_val_iou:.4f}")
             self.train_losses.append(avg_train_loss)
             self.val_losses.append(avg_val_loss)
             self.train_dices.append(avg_train_dice)
@@ -249,16 +255,19 @@ class Trainer:
             self.train_ious.append(avg_train_iou)
             self.val_ious.append(avg_val_iou)
 
-            self.save_checkpoint(epoch + 1, self.best_dice, f'last_model.pth')
+            self.save_checkpoint(epoch + 1, self.best_dice, self.best_iou, f'last_model.pth')
+            if avg_val_iou > self.best_iou:
+                self.best_iou, self.best_epoch_iou = avg_val_iou, epoch + 1
+                
             if self.avg_val_dice > self.best_dice:
-                self.best_dice, self.best_epoch = self.avg_val_dice, epoch + 1
-                self.save_checkpoint(epoch + 1, self.best_dice, f'best_model.pth')
+                self.best_dice, self.best_epoch_dice = self.avg_val_dice, epoch + 1
+                self.save_checkpoint(epoch + 1, self.best_dice, self.best_iou, f'best_model.pth')
                 self.early_stop_counter = 0
             else:
                 self.early_stop_counter += 1
 
             if self.early_stop_counter >= self.patience:
-                self.save_checkpoint(epoch + 1, self.best_dice, f'last_model.pth')
+                self.save_checkpoint(epoch + 1, self.best_dice, self.best_iou, f'last_model.pth')
                 print(f"[INFO] Early stopping at epoch {epoch + 1}")
                 break
 
