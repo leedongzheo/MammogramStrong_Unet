@@ -4,7 +4,7 @@ from train import*
 def export(trainer):
     source_file1='last_model.pth'
     source_file2='best_model.pth'
-    path=f"output_epoch{trainer.best_epoch}_dice{trainer.best_dice:.4f}"
+    path=f"output_epoch{trainer.best_epoch_dice}_dice{trainer.best_dice:.4f}"
     output_folder = os.path.join(BASE_OUTPUT,path)
     os.makedirs(output_folder, exist_ok=True)
     # Di chuyển
