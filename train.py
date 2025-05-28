@@ -39,6 +39,7 @@ def main():
     from trainer import Trainer
     from model import Unet, unet_pyramid_cbam_gate, Swin_unet
     import optimizer
+    from dataset import get_dataloaders
     from result import export, export_evaluate
     global trainer
     SEED=42
