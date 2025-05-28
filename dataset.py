@@ -20,7 +20,7 @@ class SegmentationDataset(Dataset):
 			# Debug nếu cần
 			print(f"[DEBUG] image: {image.shape}, mask: {mask.shape}")
 			if image.shape[:2] != mask.shape[:2]:
-				raise ValueError(f"[SHAPE ERROR] Image and mask shapes do not match: {image.shape[:2]} vs {mask.shape[:2]}")
+				raise ValueError(f"[SHAPE ERROR] Image and mask shapes do not match: {image.shape[:2]} vs {mask.shape[:2]} vs {imagePath}")
 			else: 
 				print("Ko co bug")
 			# grab the image path from the current index
