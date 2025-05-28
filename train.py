@@ -11,6 +11,7 @@ def get_args():
     parser.add_argument("--data", type=str, required=True, help="Đường dẫn đến dataset đã giải nén")
     # Tham số trường hợp
     parser.add_argument("--checkpoint", type=str, help="Đường dẫn đến file checkpoint (chỉ dùng cho chế độ pretrain)")
+    parser.add_argument("--augment", action='store_true', help="Bật Augmentation cho dữ liệu đầu vào")
     # Tham số mặc định(default)
     parser.add_argument("--saveas", type=str, help="Thư mục lưu checkpoint")
     parser.add_argument("--lr0", type=float, help="learning rate, default = 0.0001")
@@ -55,6 +56,7 @@ def main():
     # model1 = Swin_unet.SwinUnet() 
     optimizer1 = optimizer.optimizer(model = model1)
     trainer = Trainer(model = model1, optimizer = optimizer1)
+    trainLoader, validLoader, testLoader = get_dataloaders(args.augment)
     if args.mode == "train":
         trainer.train(trainLoader, validLoader, testLoader)
         export(trainer)
