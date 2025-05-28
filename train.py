@@ -36,7 +36,9 @@ def get_args():
     return args
 
 def main():  
+    import numpy as np
     import torch
+    import random
     from trainer import Trainer
     from model import Unet, unet_pyramid_cbam_gate, Swin_unet
     import optimizer
