@@ -54,7 +54,7 @@ def get_dataloaders(augment):
 	        interpolation=cv2.INTER_LINEAR,          # cho ảnh
 	        mask_interpolation=cv2.INTER_NEAREST     # cho mask
     ),
-            A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+            A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
             ToTensorV2()
         ])
 
@@ -66,7 +66,7 @@ def get_dataloaders(augment):
 	        mask_interpolation=cv2.INTER_NEAREST     # cho mask
     ),
         # A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
-	     A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+	     A.Normalize(mean=(0.0, 0.0, 0.0), std=(1.0, 1.0, 1.0)),
         ToTensorV2()
     ])
 
