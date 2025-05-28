@@ -57,9 +57,9 @@ class Trainer:
         self.train_dices, self.val_dices = self.checkpoint['train_dices'], self.checkpoint['val_dices']
         self.train_ious, self.val_ious = self.checkpoint['train_ious'], self.checkpoint['val_ious']
         self.best_dice, self.best_epoch_dice = self.checkpoint['best_dice'], self.checkpoint['best_epoch_dice']
-        self.best_dice = self.checkpoint['best_dice']
+        # self.best_dice = self.checkpoint['best_dice']
         # self.best_iou = self.checkpoint['best_iou']
-
+        self.best_iou, self.best_epoch_iou = self.checkpoint['best_iou'], self.checkpoint['best_epoch_iou']
     def train(self, train_loader, val_loader, test_loader):
         print("lr0", lr0)
         print("bach_size", bach_size)
