@@ -18,9 +18,11 @@ class SegmentationDataset(Dataset):
 		mask = cv2.imread(maskPath, cv2.IMREAD_GRAYSCALE) # với cv2.IMREAD_GRAYSCALE = 0
 		if self.transforms:
 			# Debug nếu cần
-			# print(f"[DEBUG] image: {image.shape}, mask: {mask.shape}")
+			print(f"[DEBUG] image: {image.shape}, mask: {mask.shape}")
 			if image.shape[:2] != mask.shape[:2]:
 				raise ValueError(f"[SHAPE ERROR] Image and mask shapes do not match: {image.shape[:2]} vs {mask.shape[:2]}")
+			else: 
+				print("Ko co bug")
 			# grab the image path from the current index
 			augmented = self.transforms(image=image, mask=mask)
 			image = augmented["image"]
