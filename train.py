@@ -53,9 +53,8 @@ def main():
     torch.cuda.manual_seed_all(SEED)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    model1 = Unet.Unet(input_channel = 3)
     # model1 = unet_pyramid_cbam_gate.PyramidCbamGateUNet(in_channels=3)
-    # model1 = Swin_unet.SwinUnet() 
+    model1 = Swin_unet.SwinUnet() 
     optimizer1 = optimizer.optimizer(model = model1)
     trainer = Trainer(model = model1, optimizer = optimizer1)
     trainLoader, validLoader, testLoader = get_dataloaders(args.augment)
