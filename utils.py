@@ -1,5 +1,5 @@
 from config import*
-from train import get_args
+# from train import get_args
 
 def to_numpy(tensor):
     # Move tensor to CPU and convert to NumPy array
