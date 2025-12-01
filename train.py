@@ -6,7 +6,13 @@ def get_args():
     # Tham số bắt buộc nhập
     parser = argparse.ArgumentParser(description="Train, Pretrain hoặc Evaluate một model AI")
     parser.add_argument("--epoch", type=int, help="Số epoch để train")
-    # parser.add_argument("--model", type=str, required=True, help="Đường dẫn đến model")
+    parser.add_argument(
+        "--model",
+        type=str,
+        choices=["unetpp", "unet", "swin", "pyramid"],
+        default="unetpp",
+        help="Chọn kiến trúc mô hình",
+    )
     parser.add_argument("--mode", type=str, choices=["train", "pretrain", "evaluate"], required=True, help="Chế độ: train hoặc pretrain hoặc evaluate")
     parser.add_argument("--data", type=str, required=True, help="Đường dẫn đến dataset đã giải nén")
     # Tham số trường hợp
@@ -35,12 +41,12 @@ def get_args():
         parser.error("--epoch là bắt buộc khi mode là 'train' hoặc 'pretrain'")
     return args
 
-def main():  
+def main():
     import numpy as np
     import torch
     import random
     from trainer import Trainer
-    from model import Unet, unet_pyramid_cbam_gate, Swin_unet
+    from model import Unet, unet_pyramid_cbam_gate, Swin_unet, unet_plus_plus
     import optimizer
     from dataset import get_dataloaders
     from result import export, export_evaluate
@@ -53,8 +59,15 @@ def main():
     torch.cuda.manual_seed_all(SEED)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-    # model1 = unet_pyramid_cbam_gate.PyramidCbamGateUNet(in_channels=3)
-    model1 = Swin_unet.SwinUnet() 
+
+    if args.model == "unetpp":
+        model1 = unet_plus_plus.UNetPlusPlus(in_channels=3, num_classes=numclass)
+    elif args.model == "unet":
+        model1 = Unet.Unet(input_channel=3)
+    elif args.model == "pyramid":
+        model1 = unet_pyramid_cbam_gate.PyramidCbamGateUNet(in_channels=3)
+    else:
+        model1 = Swin_unet.SwinUnet()
     optimizer1 = optimizer.optimizer(model = model1)
     trainer = Trainer(model = model1, optimizer = optimizer1)
     trainLoader, validLoader, testLoader = get_dataloaders(args.augment)
